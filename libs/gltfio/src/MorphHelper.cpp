@@ -79,6 +79,13 @@ MorphHelper::~MorphHelper() {
     }
 }
 
+std::vector<std::string> MorphHelper::getTargetNames(Entity entity) noexcept {
+    if (mMorphTable.find(entity) == mMorphTable.end()) {
+        return std::vector<std::string>();
+    }
+    return mMorphTable[entity].targetNames;
+}
+
 void MorphHelper::applyWeights(Entity entity, float const* weights, size_t count) noexcept {
     auto& engine = *mAsset->mEngine;
     auto renderableManager = &engine.getRenderableManager();
@@ -139,6 +146,16 @@ void MorphHelper::applyWeights(Entity entity, float const* weights, size_t count
     renderableManager->setMorphWeights(renderable, highest);
 }
 
+static std::string getMorphTargetName(cgltf_mesh const* mesh, cgltf_primitive const* prim, int targetIndex) noexcept {
+    if (mesh->target_names_count > 0 && mesh->target_names_count == prim->targets_count) {
+        return mesh->target_names[targetIndex];
+    }
+    if (prim->target_names_count > 0 && prim->target_names_count == prim->targets_count) {
+        return prim->target_names[targetIndex];
+    }
+    return "target_" + std::to_string(targetIndex);
+}
+
 void MorphHelper::addPrimitive(cgltf_mesh const* mesh, int primitiveIndex, TableEntry* entry) {
     auto& engine = *mAsset->mEngine;
     const cgltf_primitive& prim = mesh->primitives[primitiveIndex];
@@ -147,8 +164,13 @@ void MorphHelper::addPrimitive(cgltf_mesh const* mesh, int primitiveIndex, Table
     entry->primitives.push_back({ vertexBuffer, determineBaseSlot(prim) });
     std::vector<GltfTarget>& targets = entry->primitives.back().targets;
 
+    bool fillTargetNames = (entry->targetNames.size() == 0);
+
     const cgltf_accessor* previous = nullptr;
     for (int targetIndex = 0; targetIndex < prim.targets_count; targetIndex++) {
+        if (fillTargetNames) {
+            entry->targetNames.push_back(getMorphTargetName(mesh, &prim, targetIndex));
+        }
         const cgltf_morph_target& morphTarget = prim.targets[targetIndex];
         for (cgltf_size aindex = 0; aindex < morphTarget.attributes_count; aindex++) {
             const cgltf_attribute& attribute = morphTarget.attributes[aindex];

@@ -21,6 +21,7 @@
 
 #include <tsl/robin_map.h>
 
+#include <string>
 #include <vector>
 
 struct cgltf_node;
@@ -49,6 +50,11 @@ public:
      */
     void applyWeights(Entity targetEntity, float const* weights, size_t count) noexcept;
 
+    /**
+     * return morph target names
+     */
+    std::vector<std::string> getTargetNames(Entity entity) noexcept;
+
 private:
     struct GltfTarget {
         filament::BufferObject* bufferObject;
@@ -64,6 +70,7 @@ private:
 
     struct TableEntry {
         std::vector<GltfPrimitive> primitives; // TODO: flatten this?
+        std::vector<std::string> targetNames;
     };
 
     void addPrimitive(cgltf_mesh const* mesh, int primitiveIndex, TableEntry* entry);
