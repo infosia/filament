@@ -470,4 +470,12 @@ void AnimatorImpl::applyAnimation(const Channel& channel, float t, size_t prevIn
     transformManager->setTransform(node, xform);
 }
 
+size_t Animator::getMorphTargetCount(Entity entity) const noexcept {
+    return getMorphTargetNames(entity).size();
+}
+
+std::vector<std::string> Animator::getMorphTargetNames(Entity entity) const noexcept {
+    return mImpl->morpher->getTargetNames(entity);
+}
+
 } // namespace gltfio

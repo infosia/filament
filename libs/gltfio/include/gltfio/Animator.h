@@ -68,6 +68,16 @@ public:
      */
     const char* getAnimationName(size_t animationIndex) const;
 
+    /**
+     * Returns morph target count for the Entity.
+     */
+    size_t getMorphTargetCount(utils::Entity entity) const noexcept;
+
+    /**
+     * Returns morph target names for the Entity.
+     */
+    std::vector<std::string> getMorphTargetNames(utils::Entity entity) const noexcept;
+
     // For internal use only.
     void addInstance(FFilamentInstance* instance);
 

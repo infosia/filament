@@ -51,7 +51,7 @@ public:
     void applyWeights(Entity targetEntity, float const* weights, size_t count) noexcept;
 
     /**
-     * return morph target names
+     * Returns morph target names
      */
     std::vector<std::string> getTargetNames(Entity entity) noexcept;
 
