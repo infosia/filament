@@ -183,8 +183,6 @@ corresponding preprocessor flag to selectively disable formats.
 #endif
 #ifndef ASSIMP_BUILD_NO_GLTF_IMPORTER
 #   include "glTF/glTFImporter.h"
-#endif
-#ifndef ASSIMP_BUILD_NO_GLTF2_IMPORTER
 #   include "glTF2/glTF2Importer.h"
 #endif
 #ifndef ASSIMP_BUILD_NO_C4D_IMPORTER
