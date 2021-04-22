@@ -478,4 +478,8 @@ std::vector<std::string> Animator::getMorphTargetNames(Entity entity) const noex
     return mImpl->morpher->getTargetNames(entity);
 }
 
+void Animator::applyWeights(Entity targetEntity, float const* weights, size_t count) noexcept {
+    return mImpl->morpher->applyWeights(targetEntity, weights, count);
+}
+
 } // namespace gltfio
