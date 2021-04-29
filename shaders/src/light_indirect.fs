@@ -515,6 +515,9 @@ void evaluateIBL(const MaterialInputs material, const PixelParams pixel, inout v
 
     // specular layer
     vec3 Fr;
+#if defined(MTOON)
+    vec3 E = vec3(0.0);
+#else
 #if IBL_INTEGRATION == IBL_INTEGRATION_PREFILTERED_CUBEMAP
     vec3 E = specularDFG(pixel);
     vec3 r = getReflectedVector(pixel, shading_normal);
@@ -524,6 +527,7 @@ void evaluateIBL(const MaterialInputs material, const PixelParams pixel, inout v
     Fr = isEvaluateIBL(pixel, shading_normal, shading_view, shading_NoV);
 #endif
     Fr *= singleBounceAO(specularAO) * pixel.energyCompensation;
+#endif
 
     // diffuse layer
     float diffuseBRDF = singleBounceAO(diffuseAO); // Fd_Lambert() is baked in the SH below
