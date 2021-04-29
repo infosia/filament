@@ -64,10 +64,16 @@ void evaluateDirectionalLight(const MaterialInputs material,
         #endif
     } else {
 #if defined(MATERIAL_CAN_SKIP_LIGHTING)
+#if defined(MTOON)
+        color.rgb += surfaceShading(pixel, light, 0.0);
+#endif
         return;
 #endif
     }
 #elif defined(MATERIAL_CAN_SKIP_LIGHTING)
+#if defined(MTOON)
+    color.rgb += surfaceShading(pixel, light, 0.0);
+#endif
     if (light.NoL <= 0.0) return;
 #endif
 

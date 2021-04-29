@@ -485,6 +485,8 @@ public:
 
     MaterialBuilder& enableFramebufferFetch() noexcept;
 
+    MaterialBuilder& mtoon(bool enable) noexcept;
+
     /**
      * Build the material. If you are using the Filament engine with this library, you should use
      * the job system provided by Engine.
@@ -694,6 +696,8 @@ private:
     bool mEnableFramebufferFetch = false;
 
     PreprocessorDefineList mDefines;
+
+    bool mEnableMToon = false;
 };
 
 } // namespace filamat

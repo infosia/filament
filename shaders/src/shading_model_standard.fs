@@ -114,9 +114,13 @@ vec3 surfaceShading(const PixelParams pixel, const Light light, float occlusion)
 
     // TODO: attenuate the diffuse lobe to avoid energy gain
 
+#if defined(MTOON)
+    vec3 color = Fd;
+#else
     // The energy compensation term is used to counteract the darkening effect
     // at high roughness
     vec3 color = Fd + Fr * pixel.energyCompensation;
+#endif
 
 #if defined(MATERIAL_HAS_SHEEN_COLOR)
     color *= pixel.sheenScaling;
@@ -145,6 +149,17 @@ vec3 surfaceShading(const PixelParams pixel, const Light light, float occlusion)
 #endif
 #endif
 
+#if defined(MTOON)
+    vec3 shadeColor = vec3(1.0, 0.5, 1.0);
+    float shadeShift = 0.0;
+    float shadeToony = 0.5;
+    float maxIntensityThreshold = mix(1.0, shadeShift, shadeToony);
+    float minIntensityThreshold = shadeShift;
+
+    occlusion = clamp((occlusion - minIntensityThreshold) / max(0.00001, (maxIntensityThreshold - minIntensityThreshold)), 0.0, 1.0);
+
+    return (mix(color * shadeColor, color, occlusion) * light.colorIntensity.rgb);
+#endif
     return (color * light.colorIntensity.rgb) *
             (light.colorIntensity.w * light.attenuation * NoL * occlusion);
 }

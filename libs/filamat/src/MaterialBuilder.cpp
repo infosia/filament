@@ -391,6 +391,11 @@ MaterialBuilder& MaterialBuilder::shaderDefine(const char* name, const char* val
     return *this;
 }
 
+MaterialBuilder& MaterialBuilder::mtoon(bool enable) noexcept {
+    mEnableMToon = enable;
+    return *this;
+}
+
 bool MaterialBuilder::hasExternalSampler() const noexcept {
     for (size_t i = 0, c = mParameterCount; i < c; i++) {
         auto const& param = mParameters[i];
@@ -444,6 +449,7 @@ void MaterialBuilder::prepareToBuild(MaterialInfo& info) noexcept {
     info.sib = sbb.name("MaterialParams").build();
     info.uib = ibb.name("MaterialParams").build();
 
+    info.isMtoon = mEnableMToon;
     info.isLit = isLit();
     info.hasDoubleSidedCapability = mDoubleSidedCapability;
     info.hasExternalSamplers = hasExternalSampler();

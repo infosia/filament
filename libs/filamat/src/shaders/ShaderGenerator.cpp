@@ -195,6 +195,9 @@ std::string ShaderGenerator::createVertexProgram(filament::backend::ShaderModel 
     cg.generateDefine(vs, "HAS_SKINNING_OR_MORPHING", variant.hasSkinningOrMorphing());
     cg.generateDefine(vs, "HAS_VSM", variant.hasVsm());
     cg.generateDefine(vs, getShadingDefine(material.shading), true);
+    
+    cg.generateDefine(vs, "MTOON", material.isMtoon);
+
     generateMaterialDefines(vs, cg, mProperties, mDefines);
 
     AttributeBitset attributes = material.requiredAttributes;
@@ -398,6 +401,9 @@ std::string ShaderGenerator::createFragmentProgram(filament::backend::ShaderMode
         default:
             break;
     }
+
+    cg.generateDefine(fs, "MTOON", material.isMtoon);
+
     cg.generateDefine(fs, getShadingDefine(material.shading), true);
     generateMaterialDefines(fs, cg, mProperties, mDefines);
 
