@@ -158,7 +158,17 @@ vec3 surfaceShading(const PixelParams pixel, const Light light, float occlusion)
 
     occlusion = clamp((occlusion - minIntensityThreshold) / max(0.00001, (maxIntensityThreshold - minIntensityThreshold)), 0.0, 1.0);
 
-    return (mix(color * shadeColor, color, occlusion) * light.colorIntensity.rgb);
+    color = mix(color * shadeColor, color, occlusion) * light.colorIntensity.rgb;
+
+    // outline
+    float unlit_outline_thickness = 0.2;
+    float lit_outline_thickness = 0.1;
+    vec3 outline_color = vec3(0.0, 0.0, 0.0);
+    if (saturate(dot(shading_view, shading_normal)) < mix(unlit_outline_thickness, lit_outline_thickness, max(0.0, NoL))) {
+        color = color * outline_color;
+    }
+
+    return color;
 #endif
     return (color * light.colorIntensity.rgb) *
             (light.colorIntensity.w * light.attenuation * NoL * occlusion);
