@@ -150,12 +150,14 @@ vec3 surfaceShading(const PixelParams pixel, const Light light, float occlusion)
 #endif
 
 #if defined(MTOON)
-    vec3 shadeColor = vec3(1.0, 0.5, 1.0);
+    // shade
+    vec3 shadeColor = vec3(1.0, 0.8, 1.0);
     float shadeShift = 0.0;
-    float shadeToony = 0.5;
+    float shadeToony = 0.0;
     float maxIntensityThreshold = mix(1.0, shadeShift, shadeToony);
     float minIntensityThreshold = shadeShift;
 
+    occlusion = light.colorIntensity.w * light.attenuation * NoL * occlusion;
     occlusion = clamp((occlusion - minIntensityThreshold) / max(0.00001, (maxIntensityThreshold - minIntensityThreshold)), 0.0, 1.0);
 
     color = mix(color * shadeColor, color, occlusion) * light.colorIntensity.rgb;
