@@ -331,10 +331,15 @@ void postProcess(inout PostProcessInputs postProcess) {
     postProcess.color = result;
 
     // Drawing outlines with depth - https://roystan.net/articles/outline-shader.html
-    highp float lt = textureLodOffset(materialParams_depth, uv.xy, 0.0, ivec2(-1, -1)).r;
-    highp float rt = textureLodOffset(materialParams_depth, uv.xy, 0.0, ivec2( 1, -1)).r;
-    highp float lb = textureLodOffset(materialParams_depth, uv.xy, 0.0, ivec2(-1,  1)).r;
-    highp float rb = textureLodOffset(materialParams_depth, uv.xy, 0.0, ivec2( 1,  1)).r;
+    float scale = 1.0;
+    float halfScaleFloor = floor(scale * 0.5);
+    float halfScaleCeil = ceil(scale * 0.5);
+    vec2 texelSize = vec2(1.0) / vec2(textureSize(materialParams_depth, 0));
+
+    highp float lt = textureLod(materialParams_depth, uv.xy+vec2(-texelSize.x*halfScaleFloor, texelSize.y*halfScaleCeil), 0.0).r;
+    highp float rt = textureLod(materialParams_depth, uv.xy+vec2( texelSize.x,  texelSize.y)*halfScaleCeil,  0.0).r;
+    highp float lb = textureLod(materialParams_depth, uv.xy-vec2( texelSize.x,  texelSize.y)*halfScaleFloor, 0.0).r;
+    highp float rb = textureLod(materialParams_depth, uv.xy+vec2( texelSize.x * halfScaleCeil, -texelSize.y*halfScaleFloor), 0.0).r;
 
     float depthFiniteDifference0 = rt - lb;
     float depthFiniteDifference1 = rb - lt;
