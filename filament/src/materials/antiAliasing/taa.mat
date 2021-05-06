@@ -329,6 +329,20 @@ void postProcess(inout PostProcessInputs postProcess) {
 #endif
 
     postProcess.color = result;
-}
 
+    // Drawing outlines with depth - https://roystan.net/articles/outline-shader.html
+    highp vec4 d = vec4(frameUniforms.resolution.zw, -frameUniforms.resolution.zw) * 0.5;
+    highp float lt = textureLod(materialParams_depth, uv.xy + d.zw, 0.0).r;
+    highp float rt = textureLod(materialParams_depth, uv.xy + d.xw, 0.0).r;
+    highp float lb = textureLod(materialParams_depth, uv.xy + d.xy, 0.0).r;
+    highp float rb = textureLod(materialParams_depth, uv.xy + d.zy, 0.0).r;
+
+    float depthFiniteDifference0 = rt - lb;
+    float depthFiniteDifference1 = rb - lt;
+
+    float edgeDepth = sqrt(pow(depthFiniteDifference0, 2.0) + pow(depthFiniteDifference1, 2.0)) * 100.0;
+
+    if (edgeDepth > 0.1) {
+        postProcess.color *= vec4(0.2, 0.2, 0.2, 1.0);
+    }
 }
