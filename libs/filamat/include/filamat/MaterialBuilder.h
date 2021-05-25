@@ -489,6 +489,9 @@ public:
 
     MaterialBuilder& enableFramebufferFetch() noexcept;
 
+    MaterialBuilder& toony(bool enable) noexcept;
+    MaterialBuilder& toonyOutline(bool enable) noexcept;
+
     /**
      * Build the material. If you are using the Filament engine with this library, you should use
      * the job system provided by Engine.
@@ -699,6 +702,9 @@ private:
     bool mEnableFramebufferFetch = false;
 
     PreprocessorDefineList mDefines;
+
+    bool mToony = false;
+    bool mToonyOutline = false;
 };
 
 } // namespace filamat

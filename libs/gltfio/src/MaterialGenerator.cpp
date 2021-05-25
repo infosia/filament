@@ -298,6 +298,8 @@ static Material* createMaterial(Engine* engine, const MaterialKey& config, const
             .clearCoatIorChange(false)
             .material(shader.c_str())
             .doubleSided(config.doubleSided)
+            .toony(true)
+            .toonyOutline(true)
             .targetApi(filamat::targetApiFromBackend(engine->getBackend()));
 
     if (!optimizeShaders) {

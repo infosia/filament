@@ -1,7 +1,7 @@
 /**
  * cgltf_write - a single-file glTF 2.0 writer written in C99.
  *
- * Version: 1.10
+ * Version: 1.9
  *
  * Website: https://github.com/jkuhlmann/cgltf
  *
@@ -202,9 +202,9 @@ static void cgltf_write_strprop(cgltf_write_context* context, const char* label,
 static void cgltf_write_extras(cgltf_write_context* context, const cgltf_extras* extras)
 {
 	cgltf_size length = extras->end_offset - extras->start_offset;
-	if (length > 0 && context->data->file_data)
+	if (length > 0 && context->data->json)
 	{
-		char* json_string = ((char*) context->data->file_data) + extras->start_offset;
+		char* json_string = ((char*) context->data->json) + extras->start_offset;
 		cgltf_write_indent(context);
 		CGLTF_SPRINTF("%s", "\"extras\": ");
 		CGLTF_SNPRINTF(length, "%.*s", (int)(extras->end_offset - extras->start_offset), json_string);
@@ -258,6 +258,58 @@ static void cgltf_write_boolprop_optional(cgltf_write_context* context, const ch
 		context->needs_comma = 1;
 	}
 }
+
+#ifdef CGLTF_VRM_v0_0_IMPLEMENTATION
+static void cgltf_write_intprop_strict(cgltf_write_context* context, const char* label, int val)
+{
+	cgltf_write_indent(context);
+	CGLTF_SPRINTF("\"%s\": %d", label, val);
+	context->needs_comma = 1;
+}
+
+static void cgltf_write_floatprop_strict(cgltf_write_context* context, const char* label, float val)
+{
+	cgltf_write_indent(context);
+	CGLTF_SPRINTF("\"%s\": ", label);
+	CGLTF_SPRINTF("%g", val);
+	context->needs_comma = 1;
+
+	if (context->cursor)
+	{
+		char *decimal_comma = strchr(context->cursor - context->tmp, ',');
+		if (decimal_comma)
+		{
+			*decimal_comma = '.';
+		}
+	}
+}
+
+static void cgltf_write_boolprop_strict(cgltf_write_context* context, const char* label, bool val)
+{
+	cgltf_write_indent(context);
+	CGLTF_SPRINTF("\"%s\": %s", label, val ? "true" : "false");
+	context->needs_comma = 1;
+}
+
+static void cgltf_write_intarrayprop(cgltf_write_context* context, const char* label, const cgltf_int* vals, cgltf_size dim)
+{
+	cgltf_write_indent(context);
+	CGLTF_SPRINTF("\"%s\": [", label);
+	for (cgltf_size i = 0; i < dim; ++i)
+	{
+		if (i != 0)
+		{
+			CGLTF_SPRINTF(", %d", vals[i]);
+		}
+		else
+		{
+			CGLTF_SPRINTF("%d", vals[i]);
+		}
+	}
+	CGLTF_SPRINTF("]");
+	context->needs_comma = 1;
+}
+#endif
 
 static void cgltf_write_floatarrayprop(cgltf_write_context* context, const char* label, const cgltf_float* vals, cgltf_size dim)
 {
@@ -994,6 +1046,19 @@ static void cgltf_write_light(cgltf_write_context* context, const cgltf_light* l
 	cgltf_write_line(context, "}");
 }
 
+cgltf_result cgltf_write_json(const cgltf_options* options, const char* path, const cgltf_data* data)
+{
+	(void)options;
+	FILE* file = fopen(path, "wt");
+	if (!file)
+	{
+		return cgltf_result_file_not_found;
+	}
+	fwrite(data->json, data->json_size, 1, file);
+	fclose(file);
+	return cgltf_result_success;
+}
+
 static void cgltf_write_variant(cgltf_write_context* context, const cgltf_material_variant* variant)
 {
 	context->extension_flags |= CGLTF_EXTENSION_FLAG_MATERIALS_VARIANTS;
@@ -1060,6 +1125,10 @@ static void cgltf_write_extensions(cgltf_write_context* context, uint32_t extens
 		cgltf_write_stritem(context, "KHR_materials_variants");
 	}
 }
+
+#ifdef CGLTF_VRM_v0_0
+#include "vrm/vrm_write.v0_0.inl"
+#endif
 
 cgltf_size cgltf_write(const cgltf_options* options, char* buffer, cgltf_size size, const cgltf_data* data)
 {
@@ -1246,12 +1315,16 @@ cgltf_size cgltf_write(const cgltf_options* options, char* buffer, cgltf_size si
 		cgltf_write_line(context, "}");
 	}
 
-	if (context->extension_flags != 0)
-	{
+#ifdef CGLTF_VRM_v0_0_IMPLEMENTATION
+	if (context->data->has_vrm_v0_0 || context->extension_flags != 0) {
 		cgltf_write_line(context, "\"extensionsUsed\": [");
 		cgltf_write_extensions(context, context->extension_flags);
+		if (context->data->has_vrm_v0_0) {
+			cgltf_write_stritem(context, "VRM");
+		}
 		cgltf_write_line(context, "]");
 	}
+#endif
 
 	if (context->required_extension_flags != 0)
 	{
@@ -1259,6 +1332,15 @@ cgltf_size cgltf_write(const cgltf_options* options, char* buffer, cgltf_size si
 		cgltf_write_extensions(context, context->required_extension_flags);
 		cgltf_write_line(context, "]");
 	}
+
+#ifdef CGLTF_VRM_v0_0_IMPLEMENTATION
+	cgltf_write_line(context, "\"extensions\": {");
+	if (context->data->has_vrm_v0_0) {
+		cgltf_write_line(context, "\"VRM\": ");
+		cgltf_write_vrm_v0_0(context, &context->data->vrm_v0_0);
+	}
+	cgltf_write_line(context, "}");
+#endif
 
 	cgltf_write_extras(context, &data->extras);
 

@@ -139,6 +139,9 @@ set(SRCS
     ${SRC_DIR}/code/FBX/FBXProperties.cpp
     ${SRC_DIR}/code/FBX/FBXTokenizer.cpp
     ${SRC_DIR}/code/FBX/FBXUtil.cpp
+    ${SRC_DIR}/code/glTF/glTFImporter.cpp
+    ${SRC_DIR}/code/glTF/glTFCommon.cpp
+    ${SRC_DIR}/code/glTF2/glTF2Importer.cpp
     ${SRC_DIR}/code/X3D/FIReader.cpp
     ${SRC_DIR}/code/PostProcessing/FindDegenerates.cpp
     ${SRC_DIR}/code/PostProcessing/FindInstancesProcess.cpp
@@ -210,8 +213,6 @@ add_definitions(
     -DASSIMP_BUILD_NO_COLLADA_IMPORTER
     -DASSIMP_BUILD_NO_CSM_IMPORTER
     -DASSIMP_BUILD_NO_DXF_IMPORTER
-    -DASSIMP_BUILD_NO_GLTF_IMPORTER
-    -DASSIMP_BUILD_NO_GLTF2_IMPORTER
     -DASSIMP_BUILD_NO_HMP_IMPORTER
     -DASSIMP_BUILD_NO_IFC_IMPORTER
     -DASSIMP_BUILD_NO_IRR_IMPORTER

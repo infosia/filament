@@ -197,6 +197,8 @@ std::string ShaderGenerator::createVertexProgram(filament::backend::ShaderModel 
     cg.generateDefine(vs, "HAS_SKINNING_OR_MORPHING", variant.hasSkinningOrMorphing());
     cg.generateDefine(vs, "HAS_VSM", variant.hasVsm());
     cg.generateDefine(vs, getShadingDefine(material.shading), true);
+    cg.generateDefine(vs, "ENABLE_TOONY", material.toony);
+    cg.generateDefine(vs, "ENABLE_TOONY_OUTLINE", material.toonyOutline);
     generateMaterialDefines(vs, cg, mProperties, mDefines);
 
     AttributeBitset attributes = material.requiredAttributes;
@@ -402,6 +404,8 @@ std::string ShaderGenerator::createFragmentProgram(filament::backend::ShaderMode
         default:
             break;
     }
+    cg.generateDefine(fs, "ENABLE_TOONY", material.toony);
+    cg.generateDefine(fs, "ENABLE_TOONY_OUTLINE", material.toonyOutline);
     cg.generateDefine(fs, getShadingDefine(material.shading), true);
     generateMaterialDefines(fs, cg, mProperties, mDefines);
 
@@ -493,6 +497,9 @@ std::string ShaderGenerator::createPostProcessVertexProgram(
         cg.generateVariable(vs, ShaderType::VERTEX, variable, variableIndex++);
     }
 
+    cg.generateDefine(vs, "ENABLE_TOONY", material.toony);
+    cg.generateDefine(vs, "ENABLE_TOONY_OUTLINE", material.toonyOutline);
+
     cg.generatePostProcessInputs(vs, ShaderType::VERTEX);
     generatePostProcessMaterialVariantDefines(cg, vs, PostProcessVariant(variant));
 
@@ -528,6 +535,8 @@ std::string ShaderGenerator::createPostProcessFragmentProgram(
 
     // The UVs are at the location immediately following the custom variables.
     cg.generateDefine(fs, "LOCATION_UVS", uint32_t(MaterialBuilder::MATERIAL_VARIABLES_COUNT));
+    cg.generateDefine(fs, "ENABLE_TOONY", material.toony);
+    cg.generateDefine(fs, "ENABLE_TOONY_OUTLINE", material.toonyOutline);
 
     generatePostProcessMaterialVariantDefines(cg, fs, PostProcessVariant(variant));
 

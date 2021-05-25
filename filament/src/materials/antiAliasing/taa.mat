@@ -94,7 +94,6 @@ fragment {
 #define HISTORY_REPROJECTION    1
 #define PREVENT_FLICKERING      0   // FIXME: thin lines disapear
 
-
 float luma(const vec3 color) {
 #if USE_YCoCg
     return color.x;
@@ -242,6 +241,30 @@ void postProcess(inout PostProcessInputs postProcess) {
     s[6] = textureLodOffset(materialParams_color, uv.xy, 0.0, ivec2(-1, TEXTURE_SPACE_UP)).rgb;
     s[7] = textureLodOffset(materialParams_color, uv.xy, 0.0, ivec2( 0, TEXTURE_SPACE_UP)).rgb;
     s[8] = textureLodOffset(materialParams_color, uv.xy, 0.0, ivec2( 1, TEXTURE_SPACE_UP)).rgb;
+
+    // Drawing outlines with depth - https://roystan.net/articles/outline-shader.html
+    float scale = 1.0;
+    float halfScaleFloor = floor(scale * 0.5);
+    float halfScaleCeil = ceil(scale * 0.5);
+    vec4 outlineColor = vec4(0.5, 0.5, 0.5, 1.0);
+    vec2 texelSize = vec2(1.0) / vec2(textureSize(materialParams_depth, 0));
+
+    highp float lt = textureLod(materialParams_depth, uv.xy+vec2(-texelSize.x*halfScaleFloor, texelSize.y*halfScaleCeil), 0.0).r;
+    highp float rt = textureLod(materialParams_depth, uv.xy+vec2( texelSize.x,  texelSize.y)*halfScaleCeil,  0.0).r;
+    highp float lb = textureLod(materialParams_depth, uv.xy-vec2( texelSize.x,  texelSize.y)*halfScaleFloor, 0.0).r;
+    highp float rb = textureLod(materialParams_depth, uv.xy+vec2( texelSize.x * halfScaleCeil, -texelSize.y*halfScaleFloor), 0.0).r;
+
+    float depthFiniteDifference0 = rt - lb;
+    float depthFiniteDifference1 = rb - lt;
+
+    float edgeDepth = sqrt(pow(depthFiniteDifference0, 2.0) + pow(depthFiniteDifference1, 2.0)) * 100.0;
+
+    if (edgeDepth > 1.0 * depth) {
+        for (int i = 0 ; i < 9 ; i++) {
+            s[i] = s[i] * outlineColor.rbg;
+        }
+        color.rgb = s[4].rgb;
+    }
 
 #if USE_YCoCg
     for (int i = 0 ; i < 9 ; i++) {

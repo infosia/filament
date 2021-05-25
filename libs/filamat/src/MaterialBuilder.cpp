@@ -449,6 +449,8 @@ void MaterialBuilder::prepareToBuild(MaterialInfo& info) noexcept {
     info.sib = sbb.name("MaterialParams").build();
     info.uib = ibb.name("MaterialParams").build();
 
+    info.toony = mToony;
+    info.toonyOutline = mToonyOutline;
     info.isLit = isLit();
     info.hasDoubleSidedCapability = mDoubleSidedCapability;
     info.hasExternalSamplers = hasExternalSampler();
@@ -879,6 +881,16 @@ MaterialBuilder& MaterialBuilder::enableFramebufferFetch() noexcept {
     // This API is temporary, it is used to enable EXT_framebuffer_fetch for GLSL shaders,
     // this is used sparingly by filament's post-processing stage.
     mEnableFramebufferFetch = true;
+    return *this;
+}
+
+MaterialBuilder& MaterialBuilder::toony(bool enable) noexcept {
+    mToony = enable;
+    return *this;
+}
+
+MaterialBuilder& MaterialBuilder::toonyOutline(bool enable) noexcept {
+    mToonyOutline = enable;
     return *this;
 }
 

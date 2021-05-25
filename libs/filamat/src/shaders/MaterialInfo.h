@@ -43,6 +43,8 @@ struct UTILS_PUBLIC MaterialInfo {
     bool multiBounceAO;
     bool multiBounceAOSet;
     bool specularAOSet;
+    bool toony;
+    bool toonyOutline;
     filament::SpecularAmbientOcclusion specularAO;
     filament::RefractionMode refractionMode;
     filament::RefractionType refractionType;
