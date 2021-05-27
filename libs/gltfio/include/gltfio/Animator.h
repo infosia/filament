@@ -81,7 +81,7 @@ public:
     /**
      * Picks the influential weights and applies them to the target entity.
      */
-    void applyWeights(utils::Entity targetEntity, float const* weights, size_t count) noexcept;
+    void applyWeights(utils::Entity entity, float const* weights, size_t count) noexcept;
 
     // For internal use only.
     void addInstance(FFilamentInstance* instance);
