@@ -511,11 +511,6 @@ void SimpleViewer::updateUserInterface() {
             mScene->remove(entity);
         }
 
-        if (mAnimator) {
-            const auto morphTargets = mAnimator->getMorphTargetNames(entity);
-            printf("morph count = %d\n", morphTargets.size());
-        }
-
         auto instance = rm.getInstance(entity);
         bool scaster = rm.isShadowCaster(instance);
         ImGui::Checkbox("casts shadows", &scaster);
@@ -832,6 +827,46 @@ void SimpleViewer::updateUserInterface() {
             ImGui::Indent();
             ImGui::Checkbox("Show bounds", &mEnableWireframe);
             treeNode(mAsset->getRoot());
+            ImGui::Unindent();
+        }
+
+        auto morphTreeItem = [this, &rm](utils::Entity entity) {
+            if (mAnimator == nullptr) 
+                return;
+            const auto targets = mAnimator->getMorphTargetNames(entity);
+            for (const auto name : targets) {
+                bool mb = false;
+                ImGui::Checkbox(name.c_str(), &mb);
+            }
+        };
+
+        std::function<void(utils::Entity)> listMorph;
+        listMorph = [&](utils::Entity entity) {
+            auto tinstance = tm.getInstance(entity);
+            auto rinstance = rm.getInstance(entity);
+            intptr_t treeNodeId = 1 + entity.getId();
+            const char* name = mAsset->getName(entity);
+            ImGuiTreeNodeFlags flags = 0;
+            std::vector<utils::Entity> children(tm.getChildCount(tinstance));
+            if (name == nullptr) {
+                tm.getChildren(tinstance, children.data(), children.size());
+                for (auto ce : children) {
+                    listMorph(ce);
+                }
+            } else if (ImGui::TreeNodeEx((const void*) treeNodeId, flags, "%s", name)) {
+                if (rinstance) {
+                    morphTreeItem(entity);
+                }
+                tm.getChildren(tinstance, children.data(), children.size());
+                for (auto ce : children) {
+                    listMorph(ce);
+                }
+                ImGui::TreePop();
+            }
+        };
+        if (mAnimator && ImGui::CollapsingHeader("Morph Targets")) {
+            ImGui::Indent();
+            listMorph(mAsset->getRoot());
             ImGui::Unindent();
         }
 
