@@ -471,7 +471,7 @@ void AnimatorImpl::applyAnimation(const Channel& channel, float t, size_t prevIn
 }
 
 size_t Animator::getMorphTargetCount(Entity entity) const noexcept {
-    return getMorphTargetNames(entity).size();
+    return mImpl->morpher->getTargetCount(entity);
 }
 
 std::vector<std::string> Animator::getMorphTargetNames(Entity entity) const noexcept {

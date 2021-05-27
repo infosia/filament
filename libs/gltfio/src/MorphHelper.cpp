@@ -86,6 +86,13 @@ std::vector<std::string> MorphHelper::getTargetNames(Entity entity) noexcept {
     return mMorphTable[entity].targetNames;
 }
 
+size_t MorphHelper::getTargetCount(Entity entity) noexcept {
+    if (mMorphTable.find(entity) == mMorphTable.end()) {
+        return 0;
+    }
+    return mMorphTable[entity].targetNames.size();
+}
+
 void MorphHelper::applyWeights(Entity entity, float const* weights, size_t count) noexcept {
     auto& engine = *mAsset->mEngine;
     auto renderableManager = &engine.getRenderableManager();

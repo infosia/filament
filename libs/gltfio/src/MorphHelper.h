@@ -55,6 +55,11 @@ public:
      */
     std::vector<std::string> getTargetNames(Entity entity) noexcept;
 
+    /**
+     * Returns morph target count
+     */
+    size_t getTargetCount(Entity entity) noexcept;
+
 private:
     struct GltfTarget {
         filament::BufferObject* bufferObject;
