@@ -46,9 +46,20 @@ public:
     ~MorphHelper();
 
     /**
-     * Picks the 4 most influential weights and applies them to the target entity.
+     * Applies influential weights to the target entity.
      */
     void applyWeights(Entity targetEntity, float const* weights, size_t count) noexcept;
+
+    /**
+     * Set influential weights to the target entity.
+     * commit ... Set true in order to apply changes immediately. Otherwise use commitWeights() manually.
+     */
+    bool applyWeight(Entity entity, size_t index, float weight, bool commit = false) noexcept;
+
+    /**
+     * Applies influential weights to the target entity.
+     */
+    bool commitWeights(Entity entity) noexcept;
 
     /**
      * Returns morph target names
@@ -77,6 +88,7 @@ private:
     struct TableEntry {
         std::vector<GltfPrimitive> primitives; // TODO: flatten this?
         std::vector<std::string> targetNames;
+        std::vector<float> targetWeights;
     };
 
     void addPrimitive(cgltf_mesh const* mesh, int primitiveIndex, TableEntry* entry);

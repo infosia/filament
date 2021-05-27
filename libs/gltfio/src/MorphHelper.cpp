@@ -93,10 +93,40 @@ size_t MorphHelper::getTargetCount(Entity entity) noexcept {
     return mMorphTable[entity].targetNames.size();
 }
 
+bool MorphHelper::applyWeight(Entity entity, size_t index, float weight, bool commit) noexcept {
+    if (mMorphTable.find(entity) == mMorphTable.end() ||
+        mMorphTable[entity].targetWeights.size() <= index) {
+        return false;
+    }
+    mMorphTable[entity].targetWeights[index] = weight;
+
+    if (commit && !commitWeights(entity)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool MorphHelper::commitWeights(Entity entity) noexcept {
+    if (mMorphTable.find(entity) == mMorphTable.end()) {
+        return false;
+    }
+    const auto targetWeights = mMorphTable[entity].targetWeights;
+    applyWeights(entity, targetWeights.data(), targetWeights.size());
+    return true;
+}
+
 void MorphHelper::applyWeights(Entity entity, float const* weights, size_t count) noexcept {
     auto& engine = *mAsset->mEngine;
     auto renderableManager = &engine.getRenderableManager();
     auto renderable = renderableManager->getInstance(entity);
+
+    // Let MorphHelper maintain entity weights
+    if (mMorphTable.find(entity) != mMorphTable.end()) {
+        auto targetWeights = mMorphTable[entity].targetWeights;
+        count = std::min(count, targetWeights.size());
+        std::copy(weights, weights + count, targetWeights.begin());
+    }
 
     // If there are 4 or fewer targets, we can simply re-use the original VertexBuffer.
     if (count <= 4) {
@@ -194,6 +224,7 @@ void MorphHelper::addPrimitive(cgltf_mesh const* mesh, int primitiveIndex, Table
     for (int targetIndex = 0; targetIndex < prim.targets_count; targetIndex++) {
         if (fillTargetNames) {
             entry->targetNames.push_back(getMorphTargetName(mesh, &prim, targetIndex));
+            entry->targetWeights.push_back(0.f);
         }
         const cgltf_morph_target& morphTarget = prim.targets[targetIndex];
         for (cgltf_size aindex = 0; aindex < morphTarget.attributes_count; aindex++) {

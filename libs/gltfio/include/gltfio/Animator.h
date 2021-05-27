@@ -79,9 +79,15 @@ public:
     std::vector<std::string> getMorphTargetNames(utils::Entity entity) const noexcept;
 
     /**
-     * Picks the influential weights and applies them to the target entity.
+     * Set influential weights to the target entity.
+     * commit ... Set true in order to apply changes immediately. Otherwise use commitWeights() manually.
      */
-    void applyWeights(utils::Entity entity, float const* weights, size_t count) noexcept;
+    bool applyWeight(utils::Entity entity, size_t index, float weight, bool commit = false) noexcept;
+
+    /**
+     * Applies influential weights to the target entity.
+     */
+    bool commitWeights(utils::Entity entity) noexcept;
 
     // For internal use only.
     void addInstance(FFilamentInstance* instance);
