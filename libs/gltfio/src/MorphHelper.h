@@ -67,6 +67,11 @@ public:
     std::vector<std::string> getTargetNames(Entity entity) noexcept;
 
     /**
+     * Returns morph target weights
+     */
+    float* getTargetWeights(Entity entity) noexcept;
+
+    /**
      * Returns morph target count
      */
     size_t getTargetCount(Entity entity) noexcept;

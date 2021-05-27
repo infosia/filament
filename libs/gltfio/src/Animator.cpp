@@ -478,6 +478,10 @@ std::vector<std::string> Animator::getMorphTargetNames(Entity entity) const noex
     return mImpl->morpher->getTargetNames(entity);
 }
 
+float* Animator::getMorphTargetWeights(Entity entity) const noexcept {
+    return mImpl->morpher->getTargetWeights(entity);
+}
+
 bool Animator::applyWeight(Entity entity, size_t index, float weight, bool commit) noexcept {
     return mImpl->morpher->applyWeight(entity, index, weight, commit);
 }

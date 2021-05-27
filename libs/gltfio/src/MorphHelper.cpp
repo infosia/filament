@@ -86,6 +86,13 @@ std::vector<std::string> MorphHelper::getTargetNames(Entity entity) noexcept {
     return mMorphTable[entity].targetNames;
 }
 
+float* MorphHelper::getTargetWeights(Entity entity) noexcept {
+    if (mMorphTable.find(entity) == mMorphTable.end()) {
+        return nullptr;
+    }
+    return mMorphTable[entity].targetWeights.data();
+}
+
 size_t MorphHelper::getTargetCount(Entity entity) noexcept {
     if (mMorphTable.find(entity) == mMorphTable.end()) {
         return 0;

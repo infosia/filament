@@ -834,10 +834,17 @@ void SimpleViewer::updateUserInterface() {
             if (mAnimator == nullptr) 
                 return;
             const auto targets = mAnimator->getMorphTargetNames(entity);
-            for (const auto name : targets) {
-                bool mb = false;
-                ImGui::Checkbox(name.c_str(), &mb);
+            auto weights = mAnimator->getMorphTargetWeights(entity);
+            if (weights == nullptr)
+                return;
+            
+            ImGui::Unindent();
+            for (size_t i = 0; i < targets.size(); ++i) {
+                if (ImGui::SliderFloat(targets[i].c_str(), &weights[i], 0.0f, 1.0f)) {
+                    mAnimator->commitWeights(entity);
+                }
             }
+            ImGui::Indent();
         };
 
         std::function<void(utils::Entity)> listMorph;

@@ -79,6 +79,11 @@ public:
     std::vector<std::string> getMorphTargetNames(utils::Entity entity) const noexcept;
 
     /**
+     * Returns morph target weights for the Entity.
+     */
+    float* getMorphTargetWeights(utils::Entity entity) const noexcept;
+
+    /**
      * Set influential weights to the target entity.
      * commit ... Set true in order to apply changes immediately. Otherwise use commitWeights() manually.
      */
