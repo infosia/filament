@@ -79,6 +79,13 @@ MorphHelper::~MorphHelper() {
     }
 }
 
+std::vector<std::string> MorphHelper::getTargetNames(Entity entity) noexcept {
+    if (mMorphTable.find(entity) == mMorphTable.end()) {
+        return std::vector<std::string>();
+    }
+    return mMorphTable[entity].targetNames;
+}
+
 void MorphHelper::applyWeights(Entity entity, float const* weights, size_t count) noexcept {
     auto& engine = *mAsset->mEngine;
     auto renderableManager = &engine.getRenderableManager();
@@ -148,6 +155,16 @@ void MorphHelper::applyWeights(Entity entity, float const* weights, size_t count
     renderableManager->setMorphWeights(renderable, highest);
 }
 
+static std::string getMorphTargetName(cgltf_mesh const* mesh, cgltf_primitive const* prim, int targetIndex) noexcept {
+    if (mesh->target_names_count > 0 && mesh->target_names_count == prim->targets_count) {
+        return mesh->target_names[targetIndex];
+    }
+    if (prim->target_names_count > 0 && prim->target_names_count == prim->targets_count) {
+        return prim->target_names[targetIndex];
+    }
+    return "target_" + std::to_string(targetIndex);
+}
+
 // This method copies various morphing-related data from the FilamentAsset MeshCache primitive
 // (which lives in transient memory) into the MorphHelper primitive (which will stay resident).
 void MorphHelper::addPrimitive(cgltf_mesh const* mesh, int primitiveIndex, TableEntry* entry) {
@@ -159,6 +176,8 @@ void MorphHelper::addPrimitive(cgltf_mesh const* mesh, int primitiveIndex, Table
     entry->primitives.push_back({ vertexBuffer });
     auto& morphHelperPrim = entry->primitives.back();
 
+    bool fillTargetNames = (entry->targetNames.size() == 0);
+
     for (int i = 0; i < 4; i++) {
         morphHelperPrim.positions[i] = gltfioPrim.morphPositions[i];
         morphHelperPrim.tangents[i] = gltfioPrim.morphTangents[i];
@@ -166,6 +185,9 @@ void MorphHelper::addPrimitive(cgltf_mesh const* mesh, int primitiveIndex, Table
 
     const cgltf_accessor* previous = nullptr;
     for (int targetIndex = 0; targetIndex < prim.targets_count; targetIndex++) {
+        if (fillTargetNames) {
+            entry->targetNames.push_back(getMorphTargetName(mesh, &prim, targetIndex));
+        }
         const cgltf_morph_target& morphTarget = prim.targets[targetIndex];
         for (cgltf_size aindex = 0; aindex < morphTarget.attributes_count; aindex++) {
             const cgltf_attribute& attribute = morphTarget.attributes[aindex];

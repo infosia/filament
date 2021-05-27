@@ -68,6 +68,21 @@ public:
      */
     const char* getAnimationName(size_t animationIndex) const;
 
+    /**
+     * Returns morph target count for the Entity.
+     */
+    size_t getMorphTargetCount(utils::Entity entity) const noexcept;
+
+    /**
+     * Returns morph target names for the Entity.
+     */
+    std::vector<std::string> getMorphTargetNames(utils::Entity entity) const noexcept;
+
+    /**
+     * Picks the influential weights and applies them to the target entity.
+     */
+    void applyWeights(utils::Entity targetEntity, float const* weights, size_t count) noexcept;
+
     // For internal use only.
     void addInstance(FFilamentInstance* instance);
 

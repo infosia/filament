@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#define CGLTF_VRM_v0_0
 #include <cgltf.h>
 
 #include <math/vec4.h>

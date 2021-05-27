@@ -1,0 +1,14 @@
+## Build Filament
+
+mkdir out; cd out
+cmake .. -DFILAMENT_SUPPORTS_VULKAN=ON -DFILAMENT_SKIP_SAMPLES=ON -DFILAMENT_ENABLE_TOONY=ON
+
+## Build Tools
+
+cd out
+cmake --build . --target filamesh --config Debug
+
+## Install
+
+cd out
+cmake --install . --config Debug

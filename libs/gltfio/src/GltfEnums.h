@@ -22,6 +22,7 @@
 #include <filament/TextureSampler.h>
 #include <filament/VertexBuffer.h>
 
+#define CGLTF_VRM_v0_0
 #include <cgltf.h>
 
 #define GL_NEAREST                        0x2600

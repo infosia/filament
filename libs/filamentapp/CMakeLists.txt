@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(filamentapp C ASM)
 
-if (FILAMENT_SKIP_SAMPLES)
+if (NOT FILAMENT_ENABLE_TOONY AND FILAMENT_SKIP_SAMPLES)
     return()
 endif()
 

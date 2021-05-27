@@ -21,6 +21,8 @@ option(FILAMENT_ENABLE_LTO "Enable link-time optimizations if supported by the c
 
 option(FILAMENT_SKIP_SAMPLES "Don't build samples" OFF)
 
+option(FILAMENT_ENABLE_TOONY "Enable toony shaders and viewers" OFF)
+
 option(FILAMENT_SUPPORTS_XCB "Include XCB support in Linux builds" ON)
 
 option(FILAMENT_SUPPORTS_XLIB "Include XLIB support in Linux builds" ON)
@@ -662,6 +664,7 @@ if (IS_HOST_PLATFORM)
     add_subdirectory(${FILAMENT}/java/gltfio)
 
     add_subdirectory(${FILAMENT}/samples)
+    add_subdirectory(${FILAMENT}/toony)
 
     add_subdirectory(${EXTERNAL}/astcenc/tnt)
     add_subdirectory(${EXTERNAL}/etc2comp)

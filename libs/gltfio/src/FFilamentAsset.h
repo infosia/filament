@@ -34,6 +34,7 @@
 
 #include <utils/Entity.h>
 
+#define CGLTF_VRM_v0_0
 #include <cgltf.h>
 
 #include "upcast.h"

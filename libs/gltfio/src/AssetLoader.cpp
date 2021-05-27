@@ -49,6 +49,8 @@
 #include <vector>
 
 #define CGLTF_IMPLEMENTATION
+#define CGLTF_VRM_v0_0
+#define CGLTF_VRM_v0_0_IMPLEMENTATION
 #include <cgltf.h>
 
 #include "math.h"

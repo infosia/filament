@@ -35,6 +35,7 @@
 #include <utils/Log.h>
 #include <utils/Systrace.h>
 
+#define CGLTF_VRM_v0_0
 #include <cgltf.h>
 
 #include <math/quat.h>
