@@ -46,8 +46,13 @@ Path::Path(const std::string& path)
 }
 
 bool Path::exists() const {
+#if defined(WIN32)
+    struct _stat file;
+    return _wstat(w_str().data(), &file)  == 0;
+#else
     struct stat file;
     return stat(c_str(), &file) == 0;
+#endif
 }
 
 bool Path::isFile() const {

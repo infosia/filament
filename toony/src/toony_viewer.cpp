@@ -93,8 +93,6 @@ struct App {
     ColorGrading* colorGrading = nullptr;
 
     std::string messageBoxText;
-    std::string settingsFile;
-    std::string batchFile;
 };
 
 static const char* DEFAULT_IBL = "default_env";
@@ -144,7 +142,7 @@ static void printUsage(char* name) {
     std::cout << usage;
 }
 
-static std::ifstream::pos_type getFileSize(const char* filename) {
+static std::ifstream::pos_type getFileSize(const std::wstring filename) {
     std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
     return in.tellg();
 }
@@ -154,8 +152,6 @@ static int handleCommandLineArguments(int argc, char* argv[], App* app) {
     static const struct option OPTIONS[] = {
         { "help",         no_argument,       nullptr, 'h' },
         { "api",          required_argument, nullptr, 'a' },
-        { "batch",        required_argument, nullptr, 'b' },
-        { "headless",     no_argument,       nullptr, 'e' },
         { "ibl",          required_argument, nullptr, 'i' },
         { "ubershader",   no_argument,       nullptr, 'u' },
         { "actual-size",  no_argument,       nullptr, 's' },
@@ -209,27 +205,16 @@ static int handleCommandLineArguments(int argc, char* argv[], App* app) {
             case 'r':
                 app->recomputeAabb = true;
                 break;
-            case 't':
-                app->settingsFile = arg;
-                break;
-            case 'b': {
-                app->batchFile = arg;
-                break;
-            }
             case 'v': {
                 app->config.splitView = true;
                 break;
             }
         }
     }
-    if (app->config.headless && app->batchFile.empty()) {
-        std::cerr << "--headless is allowed only when --batch is present." << std::endl;
-        app->config.headless = false;
-    }
     return optind;
 }
 
-static bool loadSettings(const char* filename, Settings* out) {
+static bool loadSettings(const std::wstring filename, Settings* out) {
     auto contentSize = getFileSize(filename);
     if (contentSize <= 0) {
         return false;
@@ -373,14 +358,14 @@ int main(int argc, char** argv) {
 
     auto loadAsset = [&app](utils::Path filename) {
         // Peek at the file size to allow pre-allocation.
-        long contentSize = static_cast<long>(getFileSize(filename.c_str()));
+        long contentSize = static_cast<long>(getFileSize(filename.w_str()));
         if (contentSize <= 0) {
             std::cerr << "Unable to open " << filename << std::endl;
             exit(1);
         }
 
         // Consume the glTF file.
-        std::ifstream in(filename.c_str(), std::ifstream::binary | std::ifstream::in);
+        std::ifstream in(filename.w_str(), std::ifstream::binary | std::ifstream::in);
         std::vector<uint8_t> buffer(static_cast<unsigned long>(contentSize));
         if (!in.read((char*) buffer.data(), contentSize)) {
             std::cerr << "Unable to read " << filename << std::endl;
@@ -429,15 +414,6 @@ int main(int argc, char** argv) {
         app.engine = engine;
         app.names = new NameComponentManager(EntityManager::get());
         app.viewer = new SimpleViewer(engine, scene, view, 410);
-
-        if (app.settingsFile.size() > 0) {
-            bool success = loadSettings(app.settingsFile.c_str(), &app.viewer->getSettings());
-            if (success) {
-                std::cout << "Loaded settings from " << app.settingsFile << std::endl;
-            } else {
-                std::cerr << "Failed to load settings from " << app.settingsFile << std::endl;
-            }
-        }
 
         app.materials = (app.materialSource == GENERATE_SHADERS) ?
                 createMaterialGenerator(engine) : createUbershaderLoader(engine);

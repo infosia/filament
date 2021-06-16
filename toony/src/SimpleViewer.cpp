@@ -839,11 +839,13 @@ void SimpleViewer::updateUserInterface() {
                 return;
             
             ImGui::Unindent();
+            ImGui::Unindent();
             for (size_t i = 0; i < targets.size(); ++i) {
                 if (ImGui::SliderFloat(targets[i].c_str(), &weights[i], 0.0f, 1.0f)) {
                     mAnimator->commitWeights(entity);
                 }
             }
+            ImGui::Indent();
             ImGui::Indent();
         };
 

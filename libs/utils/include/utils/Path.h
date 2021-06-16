@@ -22,6 +22,7 @@
 #include <iosfwd>
 #include <string>
 #include <vector>
+#include <codecvt>
 
 namespace utils {
 
@@ -88,6 +89,10 @@ public:
     bool isEmpty() const { return m_path.empty(); }
 
     const char* c_str() const { return m_path.c_str(); }
+    const std::wstring w_str() const {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        return converter.from_bytes(m_path);
+    }
 
     /**
      * Replaces the abstract pathname of this object with the
