@@ -151,9 +151,9 @@ vec3 surfaceShading(const PixelParams pixel, const Light light, float occlusion)
 
 #if defined(ENABLE_TOONY)
     // shade
-    vec3 shadeColor = vec3(1.0, 0.8, 1.0);
+    vec3 shadeColor = vec3(0.2, 0.2, 0.2);
     float shadeShift = 0.0;
-    float shadeToony = 0.0;
+    float shadeToony = 0.8;
     float maxIntensityThreshold = mix(1.0, shadeShift, shadeToony);
     float minIntensityThreshold = shadeShift;
 

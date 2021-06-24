@@ -729,7 +729,7 @@ void SimpleViewer::updateUserInterface() {
         ImGui::Indent();
 
         ImGui::SliderFloat("Focal length (mm)", &mSettings.viewer.cameraFocalLength,
-                16.0f, 90.0f);
+                16.0f, 2000.0f);
 
         bool dofMedian = mSettings.view.dof.filter == View::DepthOfFieldOptions::Filter::MEDIAN;
         int dofRingCount = mSettings.view.dof.fastGatherRingCount;
